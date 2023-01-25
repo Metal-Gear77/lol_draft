@@ -6,18 +6,22 @@ import 'package:lol_draft/main_controller.dart';
 Widget idCard(IdModel idModel) {
   return Container(
       padding: EdgeInsets.all(20),
-      width: 150,
-      height: 150,
+      width: 360,
+      height: 240,
       child: Card(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Text(idModel.nickName!),
+            Text(
+              idModel.nickName!,
+              style: TextStyle(fontSize: 24),
+            ),
             Text(idModel.tier!),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List<Widget>.generate(
                   idModel.position!.length, (index) => positionIcon(idModel.position![index])),
-            )
+            ),
           ],
         ),
       ));
@@ -43,20 +47,29 @@ Widget positionIcon(String positionString) {
 Widget slotCard(IdModel idModel) {
   return Container(
       padding: EdgeInsets.all(20),
-      width: 400,
+      width: 440,
       height: 100,
       child: Card(
-        // color: Colors.cyanAccent,
-        child: ListTile(
-          title: Text(idModel.nickName.toString()),
-          leading: Text(idModel.tier.toString()),
-          trailing: SizedBox(
-            width: 100,
-            child: Row(
-              children: List<Widget>.generate(
-                  idModel.position!.length, (index) => positionIcon(idModel.position![index])),
-            ),
+          child: Row(
+        children: [
+          SizedBox(
+            width: 20,
           ),
-        ),
-      ));
+          SizedBox(
+            width: 40,
+            child: Text(idModel.tier.toString()),
+          ),
+          SizedBox(
+            width: 100,
+            child: Text(idModel.nickName.toString()),
+          ),
+          SizedBox(
+              width: 200,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: List<Widget>.generate(
+                    idModel.position!.length, (index) => positionIcon(idModel.position![index])),
+              ))
+        ],
+      )));
 }

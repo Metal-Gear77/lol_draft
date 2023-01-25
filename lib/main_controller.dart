@@ -1,15 +1,40 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lol_draft/IdModel.dart';
 import 'package:lol_draft/component.dart';
 
 class MainController extends GetxController {
+
+  @override
+  void onInit() {
+    super.onInit();
+
+    for (int i = 0; i < 5; i++) {
+      idList1.add(emptyData);
+      idList2.add(emptyData);
+    }
+  }
+
+  IdModel emptyData = IdModel(nickName: "", tier: "", position: []);
+
+  RxBool isDragging = false.obs;
+
+  List<Widget> positionButtonList = [
+    positionIcon(describeEnum(PositionEnum.top)),
+    positionIcon(describeEnum(PositionEnum.jungle)),
+    positionIcon(describeEnum(PositionEnum.mid)),
+    positionIcon(describeEnum(PositionEnum.bottom)),
+    positionIcon(describeEnum(PositionEnum.support))
+  ];
+
   RxList<IdModel> idList = <IdModel>[].obs;
-  Rx<IdModel> dragTempData = IdModel(
-      nickName: "empty",
-      tier: "b1",
-      position: [position.top.toString(), position.bottom.toString()]).obs;
+
+  Rx<IdModel> dragTempData = IdModel(nickName: "", tier: "", position: []).obs;
+
+  RxList<IdModel> idList1 = <IdModel>[].obs;
+  RxList<IdModel> idList2 = <IdModel>[].obs;
 
   void addIdList(IdModel idModel) {
     idList.add(idModel);
@@ -17,13 +42,6 @@ class MainController extends GetxController {
 
   void removeIdList(int index) {
     idList.removeAt(index);
-  }
-
-  void test() {
-    idList.add(IdModel(
-        nickName: "asd",
-        tier: "b1",
-        position: [position.support.toString(), position.bottom.toString()]));
   }
 
   void showAddIdCard(BuildContext context) {
@@ -35,14 +53,14 @@ class MainController extends GetxController {
         TextEditingController nickNameController = TextEditingController();
         TextEditingController tierNameController = TextEditingController();
 
-        List<String> positionList = [];
-        List<Widget> positionButtonList = [
-          Text(position.top.toString()),
-          Text(position.jungle.toString()),
-          Text(position.mid.toString()),
-          Text(position.bottom.toString()),
-          Text(position.support.toString())
+        List<String> positionList = [
+          describeEnum(PositionEnum.top),
+          describeEnum(PositionEnum.jungle),
+          describeEnum(PositionEnum.mid),
+          describeEnum(PositionEnum.bottom),
+          describeEnum(PositionEnum.support)
         ];
+        RxList<bool> isSelected = [false, false, false, false, false].obs;
 
         return AlertDialog(
           title: Text('title'),
@@ -59,22 +77,14 @@ class MainController extends GetxController {
                   decoration: InputDecoration(labelText: "tier"),
                   controller: tierNameController,
                 ),
-                Row(
-                  children: [
-                    ToggleButtons(children: positionButtonList, isSelected: isSelected)
-                        // TODO: 토글 버튼 리스트 추가
-
-                    // FloatingActionButton(
-                    //     child: positionIcon(position.bottom.toString()),
-                    //     onPressed: () {
-                    //       if (positionList.contains(position.bottom.toString())) {
-                    //         positionList.add(position.bottom.toString());
-                    //       } else {
-                    //         positionList.remove(position.bottom.toString());
-                    //       }
-                    //     })
-                  ],
-                )
+                Divider(),
+                Obx(() => ToggleButtons(
+                      isSelected: isSelected,
+                      onPressed: (int index) {
+                        isSelected[index] = !isSelected[index];
+                      },
+                      children: positionButtonList,
+                    ))
               ],
             ),
           ),
@@ -82,10 +92,19 @@ class MainController extends GetxController {
             TextButton(
               child: Text('Add Id Card'),
               onPressed: () {
+                List<String> selectedPositionList = [];
+
+                for (int i = 0; i < 5; i++) {
+                  if (isSelected[i]) {
+                    selectedPositionList.add(positionList[i]);
+                  }
+                }
+
                 addIdList(IdModel(
                     nickName: nickNameController.text,
                     tier: tierNameController.text,
-                    position: []));
+                    position: selectedPositionList));
+
                 Navigator.of(dialogContext).pop(); // Dismiss alert dialog
               },
             ),
@@ -96,4 +115,4 @@ class MainController extends GetxController {
   }
 }
 
-enum position { top, jungle, mid, bottom, support }
+enum PositionEnum { top, jungle, mid, bottom, support }
