@@ -1,16 +1,13 @@
 # lol_draft
 
-A new Flutter project.
+롤 내전을 짜는 프로그램입니다.
 
-## Getting Started
+## 탑재된 기능
 
-This project is a starting point for a Flutter application.
+- 아이디 추가
+- 아이디 삭제
 
-A few resources to get you started if this is your first Flutter project:
+### 추가 예정 기능
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- 팀 자동 배정
+- 중복 큐 불가 기능
