@@ -38,10 +38,14 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_svg: ^1.1.6
   get: ^4.6.5
+  flutter_launcher_icons: ^0.11.0
+#https://pub.dev/packages/flutter_launcher_icons
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  path: ^1.8.2
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
