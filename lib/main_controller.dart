@@ -6,17 +6,6 @@ import 'package:lol_draft/IdModel.dart';
 import 'package:lol_draft/component.dart';
 
 class MainController extends GetxController {
-
-  @override
-  void onInit() {
-    super.onInit();
-
-    for (int i = 0; i < 5; i++) {
-      idList1.add(emptyData);
-      idList2.add(emptyData);
-    }
-  }
-
   IdModel emptyData = IdModel(nickName: "", tier: "", position: []);
 
   RxBool isDragging = false.obs;
@@ -33,8 +22,20 @@ class MainController extends GetxController {
 
   Rx<IdModel> dragTempData = IdModel(nickName: "", tier: "", position: []).obs;
 
-  RxList<IdModel> idList1 = <IdModel>[].obs;
-  RxList<IdModel> idList2 = <IdModel>[].obs;
+  RxList<IdModel> idList1 = <IdModel>[
+    IdModel(nickName: "", tier: "", position: []),
+    IdModel(nickName: "", tier: "", position: []),
+    IdModel(nickName: "", tier: "", position: []),
+    IdModel(nickName: "", tier: "", position: []),
+    IdModel(nickName: "", tier: "", position: [])
+  ].obs;
+  RxList<IdModel> idList2 = <IdModel>[
+    IdModel(nickName: "", tier: "", position: []),
+    IdModel(nickName: "", tier: "", position: []),
+    IdModel(nickName: "", tier: "", position: []),
+    IdModel(nickName: "", tier: "", position: []),
+    IdModel(nickName: "", tier: "", position: [])
+  ].obs;
 
   void addIdList(IdModel idModel) {
     idList.add(idModel);
