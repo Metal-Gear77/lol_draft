@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:lol_draft/IdModel.dart';
 import 'package:lol_draft/component.dart';
+import 'package:provider/provider.dart';
 
-class MainController extends GetxController {
+class MainProvider extends ChangeNotifier {
   IdModel emptyData = IdModel(nickName: "", tier: "", position: []);
 
-  RxBool isDragging = false.obs;
+  var isDragging = false;
 
   List<Widget> positionButtonList = [
     positionIcon(describeEnum(PositionEnum.top)),
@@ -18,101 +18,188 @@ class MainController extends GetxController {
     positionIcon(describeEnum(PositionEnum.support))
   ];
 
-  RxList<IdModel> idList = <IdModel>[].obs;
+  List<IdModel> idList = <IdModel>[];
 
-  Rx<IdModel> dragTempData = IdModel(nickName: "", tier: "", position: []).obs;
+  IdModel dragTempData = IdModel(nickName: "", tier: "", position: []);
 
-  RxList<IdModel> idList1 = <IdModel>[
+  List<IdModel> idList1 = <IdModel>[
     IdModel(nickName: "", tier: "", position: []),
     IdModel(nickName: "", tier: "", position: []),
     IdModel(nickName: "", tier: "", position: []),
     IdModel(nickName: "", tier: "", position: []),
     IdModel(nickName: "", tier: "", position: [])
-  ].obs;
-  RxList<IdModel> idList2 = <IdModel>[
+  ];
+  List<IdModel> idList2 = <IdModel>[
     IdModel(nickName: "", tier: "", position: []),
     IdModel(nickName: "", tier: "", position: []),
     IdModel(nickName: "", tier: "", position: []),
     IdModel(nickName: "", tier: "", position: []),
     IdModel(nickName: "", tier: "", position: [])
-  ].obs;
+  ];
+
+  int tierSum1 = 0;
+  int tierSum2 = 0;
 
   void addIdList(IdModel idModel) {
     idList.add(idModel);
+    notifyListeners();
   }
 
   void removeIdList(int index) {
     idList.removeAt(index);
+    notifyListeners();
   }
 
   void showAddIdCard(BuildContext context) {
-    showDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      // false = user must tap button, true = tap outside dialog
-      builder: (BuildContext dialogContext) {
-        TextEditingController nickNameController = TextEditingController();
-        TextEditingController tierNameController = TextEditingController();
+    TextEditingController nickNameController = TextEditingController();
+    TextEditingController tierNameController = TextEditingController();
 
-        List<String> positionList = [
-          describeEnum(PositionEnum.top),
-          describeEnum(PositionEnum.jungle),
-          describeEnum(PositionEnum.mid),
-          describeEnum(PositionEnum.bottom),
-          describeEnum(PositionEnum.support)
-        ];
-        RxList<bool> isSelected = [false, false, false, false, false].obs;
+    List<String> positionList = [
+      describeEnum(PositionEnum.top),
+      describeEnum(PositionEnum.jungle),
+      describeEnum(PositionEnum.mid),
+      describeEnum(PositionEnum.bottom),
+      describeEnum(PositionEnum.support)
+    ];
+    List<bool> isSelected = [false, false, false, false, false];
 
-        return AlertDialog(
-          title: Text('title'),
-          content: SizedBox(
-            width: 400,
-            height: 200,
-            child: Column(
-              children: [
-                TextField(
-                  decoration: InputDecoration(labelText: "nickName"),
-                  controller: nickNameController,
-                ),
-                TextField(
-                  decoration: InputDecoration(labelText: "tier"),
-                  controller: tierNameController,
-                ),
-                Divider(),
-                Obx(() => ToggleButtons(
-                      isSelected: isSelected,
-                      onPressed: (int index) {
-                        isSelected[index] = !isSelected[index];
+    showDialog(
+        context: context,
+        builder: (_) {
+          final myModel = Provider.of<MainProvider>(context, listen: true);
+          return ChangeNotifierProvider.value(
+            value: myModel,
+            child: AlertDialog(
+              title: Text('title'),
+              content: SizedBox(
+                width: 400,
+                height: 200,
+                child: Column(
+                  children: [
+                    TextField(
+                      decoration: InputDecoration(labelText: "nickName"),
+                      controller: nickNameController,
+                    ),
+                    TextField(
+                      decoration: InputDecoration(labelText: "tier"),
+                      controller: tierNameController,
+                    ),
+                    Divider(),
+                    Consumer<MainProvider>(
+                      builder: (context, provider, child) {
+                        return ToggleButtons(
+                          isSelected: isSelected,
+                          onPressed: (int index) {
+                            isSelected[index] = !isSelected[index];
+                            notifyListeners();
+                          },
+                          children: positionButtonList,
+                        );
                       },
-                      children: positionButtonList,
-                    ))
+                    )
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('Add Id Card'),
+                  onPressed: () {
+                    List<String> selectedPositionList = [];
+
+                    for (int i = 0; i < 5; i++) {
+                      if (isSelected[i]) {
+                        selectedPositionList.add(positionList[i]);
+                      }
+                    }
+
+                    addIdList(IdModel(
+                        nickName: nickNameController.text,
+                        tier: tierNameController.text,
+                        position: selectedPositionList));
+                    notifyListeners();
+                    Navigator.of(context).pop(); // Dismiss alert dialog
+                  },
+                ),
               ],
             ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Add Id Card'),
-              onPressed: () {
-                List<String> selectedPositionList = [];
+          );
 
-                for (int i = 0; i < 5; i++) {
-                  if (isSelected[i]) {
-                    selectedPositionList.add(positionList[i]);
-                  }
-                }
+          // return AlertDialog(
+          //   title: Text('title'),
+          //   content: SizedBox(
+          //     width: 400,
+          //     height: 200,
+          //     child: Column(
+          //       children: [
+          //         TextField(
+          //           decoration: InputDecoration(labelText: "nickName"),
+          //           controller: nickNameController,
+          //         ),
+          //         TextField(
+          //           decoration: InputDecoration(labelText: "tier"),
+          //           controller: tierNameController,
+          //         ),
+          //         Divider(),
+          //         ToggleButtons(
+          //           isSelected: isSelected,
+          //           onPressed: (int index) {
+          //             isSelected[index] = !isSelected[index];
+          //             notifyListeners();
+          //           },
+          //           children: positionButtonList,
+          //         )
+          //       ],
+          //     ),
+          //   ),
+          //   actions: <Widget>[
+          //     TextButton(
+          //       child: Text('Add Id Card'),
+          //       onPressed: () {
+          //         List<String> selectedPositionList = [];
+          //
+          //         for (int i = 0; i < 5; i++) {
+          //           if (isSelected[i]) {
+          //             selectedPositionList.add(positionList[i]);
+          //           }
+          //         }
+          //
+          //         addIdList(IdModel(
+          //             nickName: nickNameController.text,
+          //             tier: tierNameController.text,
+          //             position: selectedPositionList));
+          //         notifyListeners();
+          //         Navigator.of(context).pop(); // Dismiss alert dialog
+          //       },
+          //     ),
+          //   ],
+          // );
+        });
+  }
 
-                addIdList(IdModel(
-                    nickName: nickNameController.text,
-                    tier: tierNameController.text,
-                    position: selectedPositionList));
-
-                Navigator.of(dialogContext).pop(); // Dismiss alert dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
+  void calculateTierSum() {
+    int tempSum1 = 0;
+    int tempSum2 = 0;
+    for (int i = 0; i < 5; i++) {
+      try {
+        var temp = int.parse(idList1[i].tier!);
+        tempSum1 += temp;
+        print(tempSum1);
+      } catch (e) {
+        print(e);
+      }
+    }
+    for (int i = 0; i < 5; i++) {
+      try {
+        var temp = int.parse(idList2[i].tier!);
+        tempSum2 += temp;
+        print(tempSum2);
+      } catch (e) {
+        print(e);
+      }
+    }
+    tierSum1 = tempSum1;
+    tierSum2 = tempSum2;
+    notifyListeners();
   }
 }
 
